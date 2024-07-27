@@ -688,7 +688,24 @@ async function  cam_from_builder(datas,index,id) {
                     document.getElementById('dr').appendChild(option);
                 })
             }
-        })
+        });
+        //
+        frappe.call({
+            method: "suvaidyam.services.apis.get_sub_dr",
+            args: {},
+            callback: function(response) {
+                if (response.message) {
+                    response.message.forEach(function(item) {
+                        const option = document.createElement('option');
+                        option.value = item.name;
+                        
+                        option.textContent = item.name1;
+                        document.getElementById('sub_dr').appendChild(option);
+                    });
+                }
+            }
+        });
+        
 
         // { ======== Steper ========
 
