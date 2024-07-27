@@ -2,14 +2,17 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Beneficiary", {
-   async refresh(frm) {
-       await call_popup(frm,'#customPopup')
-        $('#closePopup , #callend').off('click').on('click', function () {
-            $('#customPopup').hide();
-            frm.refresh();
-        });
-        // calling popup
-        // if (frm?.doc?.first_name !== undefined && frappe.session.user_fullname === 'Agent') {
+    refresh(frm) {
+        // depended dropdown
+        depended_dropdown(frm, frm.doc.state, 'centre', 'state')
+        depended_dropdown(frm, frm.doc.state, 'district', 'state')
+        depended_dropdown(frm, frm.doc.district, 'block', 'district')
+        depended_dropdown(frm, frm.doc.block, 'village', 'block')
+        depended_dropdown(frm, frm.doc.centre, 'campaign', 'centre')
+
+        // call popup
+        call_popup(frm,'#customPopup')
+
         let d = new frappe.ui.Dialog({
             title: 'Make a call',
             fields: [
@@ -25,7 +28,6 @@ frappe.ui.form.on("Beneficiary", {
                     fieldname: 'campaign',
                     fieldtype: 'Link',
                     options: 'Campaign',
-                    only_select:1,
                     get_query: function () {
                         let filters = (frm?.doc?.campaign || []).map(item => item.campaign);
                         return { filters: [['name', 'in', filters]] };
@@ -52,22 +54,13 @@ frappe.ui.form.on("Beneficiary", {
         frm.add_custom_button('+ Make a call', () => {
             d.show();
         })
-        // }
 
-        // depended dropdown
-        depended_dropdown(frm,frm.doc.state,'centre','state')
-        depended_dropdown(frm,frm.doc.state,'district','state')
-        depended_dropdown(frm,frm.doc.district,'block','district')
-        depended_dropdown(frm,frm.doc.block,'village','block')
-        depended_dropdown(frm,frm.doc.centre,'campaign','centre')
-         
-        // Custom Html Block
-        main_conatiner('beneficiary_details',frm)
-      
+        //   ========Custom Html Block ============
+        main_conatiner('beneficiary_details',frm) 
     },
     state: function (frm) {
-        depended_dropdown(frm,frm.doc.state,'centre','state')
-        depended_dropdown(frm,frm.doc.state,'district','state')
+        depended_dropdown(frm, frm.doc.state, 'centre', 'state')
+
         frm.set_value('centre', '')
         frm.set_value('district', '')
         frm.set_value('block', '')
@@ -75,21 +68,21 @@ frappe.ui.form.on("Beneficiary", {
         frm.set_value('campaign', '')
     },
     centre: function (frm) {
-        depended_dropdown(frm,frm.doc.centre,'campaign','centre')
+        depended_dropdown(frm, frm.doc.state, 'district', 'state')
         frm.set_value('campaign', '')
     },
     district: function (frm) {
-        depended_dropdown(frm,frm.doc.district,'block','district')
+        depended_dropdown(frm, frm.doc.district, 'block', 'district')
         frm.set_value('block', '')
         frm.set_value('village', '')
     },
     block: function (frm) {
-        depended_dropdown(frm,frm.doc.block,'village','block')
+        depended_dropdown(frm, frm.doc.block, 'village', 'block')
         frm.set_value('village', '')
     },
     // match number to parent
     phone_number: function (frm) {
-        if (frm.doc?.phone_number.length >= 10) {
+        if (frm.doc?.phone_number.length >= 12) {
             frappe.call({
                 method: 'frappe.client.get_list',
                 args: {
@@ -115,5 +108,6 @@ frappe.ui.form.on("Beneficiary", {
         }
 
     },
- 
+   
+    
 });

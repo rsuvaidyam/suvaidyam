@@ -101,7 +101,6 @@
    "label": "Geo"
   },
   {
-   "default": "+91-",
    "fieldname": "phone_number",
    "fieldtype": "Data",
    "label": "Phone Number",
@@ -164,7 +163,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-07-19 16:46:28.490213",
+ "modified": "2024-07-26 15:36:35.316931",
  "modified_by": "Administrator",
  "module": "SUVAIDYAM",
  "name": "Beneficiary",
