@@ -155,7 +155,7 @@ function main_conatiner(id,frm) {
                 })
                 this.style.backgroundColor = "#f4f4f4";
                 this.style.borderLeft = '5px solid blue';
-                await fetchData(camp.campaign,sidePage);
+                await fetchData(camp.campaign,sidePage,frm);
             });
         });
 
@@ -271,7 +271,7 @@ function right_side() {
 }
 // 
 
-async function fetchData(campaignId,sidePage) {
+async function fetchData(campaignId,sidePage,frm) {
     
     try {
         const response = await new Promise((resolve, reject) => {
@@ -454,7 +454,7 @@ async function fetchData(campaignId,sidePage) {
             // console.log(horizontalParagraphs)
             horizontalParagraphs[0].classList.add('active')
             // cam_from_builder(0,datas)
-            cam_from_builder(datas,0,'#form-container')
+            cam_from_builder(datas,0,'#form-container',frm,campaignId)
 
             horizontalParagraphs.forEach((paragraph, index) => {
                 paragraph.addEventListener('click', async (event) => {
@@ -463,7 +463,7 @@ async function fetchData(campaignId,sidePage) {
                         p.classList.remove('active');
                     });
                     paragraph.classList.add('active');
-                    await cam_from_builder(datas,index,'#form-container')
+                    await cam_from_builder(datas,index,'#form-container',frm,campaignId)
                 });
             });
         }
@@ -472,114 +472,109 @@ async function fetchData(campaignId,sidePage) {
         console.error(error);
     }
 }
-async function  cam_from_builder(datas,index,id) {
+async function cam_from_builder(datas, index, id,frm,cam_id) {
+   
     let tab_id;
     let form_id; 
     if (index >= 0) {
-        form_id = datas[index][0]
+        form_id = datas[index][0];
     }
-        await frappe.call({
-            method: 'frappe.desk.form.load.getdoc',
-            args: {
-                doctype: 'Campaign Form',
-                fields: ['fields'],
-                name: form_id,
-                order_by: 'modified desc',
-            },
-            callback: function (response) {
-                tab_id = response.docs[0].fields;
-                let sidePage = document.querySelector(id);
-                if (sidePage) {
-                    // console.log(tab_id);
-                    let formContent = tab_id.map(item => {
-                        // console.log(item.fieldname)
-                        switch (item.fieldtype) {
-                            case "Data":
-                                return `
-                             <div class="form-group">
-                                    <label for="${item.label}">
+
+    // Load form data
+    await frappe.call({
+        method: 'frappe.desk.form.load.getdoc',
+        args: {
+            doctype: 'Campaign Form',
+            fields: ['fields'],
+            name: form_id,
+            order_by: 'modified desc',
+        },
+        callback: function (response) {
+            tab_id = response.docs[0].fields;
+            let sidePage = document.querySelector(id);
+            if (sidePage) {
+                let formContent = tab_id.map(item => {
+                    switch (item.fieldtype) {
+                        case "Data":
+                            return `
+                                <div class="form-group">
+                                    <label for="${item.fieldname}">
                                         ${item.label} 
                                         <span class="mandatory" style="color: red;">${item.reqd === 1 ? '*' : ''}</span>
                                     </label>
-                                    <input type="text" id="${item.fieldname}" name="${item.fieldname}" class="form-control"}>
+                                    <input type="text" id="${item.fieldname}" name="${item.fieldname}" class="form-control">
                                 </div>
-
-        `; break;
-                            case "Select":
-                                let options = item.options.split('\n').map(option => `<option value="${option}">${option}</option>`).join('');
-                                return `
-            <div class="form-group">
-                <label for="${item.label}">
-                ${item.label}
-                <span class="mandatory" style="color: red;">${item.reqd === 1 ? '*' : ''}</span>
-                </label>
-                <select id="${item.fieldname}" name="${item.fieldname}" class="form-control">
-                    ${options}
-                </select>
-            </div>
-        `; break;
-                            case 'Date':
-                                return `
-            <div class="form-group">
-                <label for="${item.label}">
-                ${item.label}
-                <span class="mandatory" style="color: red;">${item.reqd === 1 ? '*' : ''}</span>
-                </label>
-                <input type="date" id="${item.fieldname}" name="${item.fieldname}" class="form-control">
-            </div>
-        `; break;
-                            case 'Int':
-                                return `
-            <div class="form-group">
-                <label for="${item.label}">
-                ${item.label}
-                    <span class="mandatory" style="color: red;">${item.reqd === 1 ? '*' : ''}</span>
-                </label>
-                <input type="number" id="${item.fieldname}" name="${item.fieldname}" class="form-control">
-            </div>
-        `; break;
-                            case 'Check':
-                                return `
-           <div class="form-group" style="display: flex; align-items: center; margin-bottom: 10px;">
-                <label for="${item.fieldname}" style="display: flex; align-items: center; gap:7px">
-                    ${item.label}
-                    <span class="mandatory" style="color: red; margin-right:7px;">${item.reqd === 1 ? '*' : ''}</span>
-                </label>
-                <input type="checkbox" style="margin-top:-5px;" id="${item.fieldname}" name="${item.fieldname}" class="form-control" style="margin-left: 10px;">
-            </div>
-
-        `; break;
-                            case 'Small Text':
-                                return `
-            <div class="form-group">
-                <label for="${item.label}">
-                ${item.label}
-                    <span class="mandatory" style="color: red;">${item.reqd === 1 ? '*' : ''}</span>
-                </label>
-                <textarea id="${item.fieldname}" name="${item.fieldname}" class="form-control"></textarea>
-            </div>
-        `; break;
-                            case 'Password':
-                                return `
-            <div class="form-group">
-                <label for="${item.label}">
-                ${item.label}
-                 <span class="mandatory" style="color: red;">${item.reqd === 1 ? '*' : ''}</span>
-                </label>
-                <input type="password" id="${item.fieldname}" name="${item.fieldname}" class="form-control">
-            </div>
-        `; break;
-
-                            // Add more cases as needed for different field types
-                            default:
-                                return `
-           <div>No Data Avilabel</div>
-        `;
-                        }
-                    }).join('');
-                    sidePage.innerHTML = `
+                            `;
+                        case "Select":
+                            let options = item.options.split('\n').map(option => `<option value="${option}">${option}</option>`).join('');
+                            return `
+                                <div class="form-group">
+                                    <label for="${item.fieldname}">
+                                        ${item.label}
+                                        <span class="mandatory" style="color: red;">${item.reqd === 1 ? '*' : ''}</span>
+                                    </label>
+                                    <select id="${item.fieldname}" name="${item.fieldname}" class="form-control">
+                                        ${options}
+                                    </select>
+                                </div>
+                            `;
+                        case 'Date':
+                            return `
+                                <div class="form-group">
+                                    <label for="${item.fieldname}">
+                                        ${item.label}
+                                        <span class="mandatory" style="color: red;">${item.reqd === 1 ? '*' : ''}</span>
+                                    </label>
+                                    <input type="date" id="${item.fieldname}" name="${item.fieldname}" class="form-control">
+                                </div>
+                            `;
+                        case 'Int':
+                            return `
+                                <div class="form-group">
+                                    <label for="${item.fieldname}">
+                                        ${item.label}
+                                        <span class="mandatory" style="color: red;">${item.reqd === 1 ? '*' : ''}</span>
+                                    </label>
+                                    <input type="number" id="${item.fieldname}" name="${item.fieldname}" class="form-control">
+                                </div>
+                            `;
+                        case 'Check':
+                            return `
+                                <div class="form-group" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <label for="${item.fieldname}" style="display: flex; align-items: center; gap:7px">
+                                        ${item.label}
+                                        <span class="mandatory" style="color: red; margin-right:7px;">${item.reqd === 1 ? '*' : ''}</span>
+                                    </label>
+                                    <input type="checkbox" id="${item.fieldname}" name="${item.fieldname}" class="form-control" style="margin-left: 10px;">
+                                </div>
+                            `;
+                        case 'Small Text':
+                            return `
+                                <div class="form-group">
+                                    <label for="${item.fieldname}">
+                                        ${item.label}
+                                        <span class="mandatory" style="color: red;">${item.reqd === 1 ? '*' : ''}</span>
+                                    </label>
+                                    <textarea id="${item.fieldname}" name="${item.fieldname}" class="form-control"></textarea>
+                                </div>
+                            `;
+                        case 'Password':
+                            return `
+                                <div class="form-group">
+                                    <label for="${item.fieldname}">
+                                        ${item.label}
+                                        <span class="mandatory" style="color: red;">${item.reqd === 1 ? '*' : ''}</span>
+                                    </label>
+                                    <input type="password" id="${item.fieldname}" name="${item.fieldname}" class="form-control">
+                                </div>
+                            `;
+                        default:
+                            return `<div>No Data Available</div>`;
+                    }
+                }).join('');
+                sidePage.innerHTML = `
                     <form id="custom_form">
-                  <div class="containers">
+                        <div class="containers">
                             <div class="stepper">
                                 <div class="step" data-step="1">1</div>
                                 <div class="line"></div>
@@ -587,235 +582,174 @@ async function  cam_from_builder(datas,index,id) {
                             </div>
                             <div class="content">
                                 <div class="step-content form_con_data" data-step="1">
-                                     ${formContent}
+                                    ${formContent}
                                 </div>
                                 <div class="step-content form_con_data" data-step="2">
-                                <div class="p-2">
-  <FormControl
-    type="select"
-    :options="[
-      {
-        label: 'One',
-        value: '1',
-      },
-      {
-        label: 'Two',
-        value: '2',
-      },
-      {
-        label: 'Three',
-        value: '3',
-      },
-    ]"
-    size="sm"
-    variant="subtle"
-    placeholder="Placeholder"
-    :disabled="false"
-    label="Label"
-    v-model="selectValue"
-  />
-</div>
-                                     <div class="form-group">
-                                        <label for="next_follow_up">
-                                        Next Follow Up 
-                                        </label>
+                                    <div class="form-group">
+                                        <label for="next_follow_up">Next Follow Up</label>
                                         <input type="date" id="next_follow_up" name="next_follow_up" class="form-control">
                                     </div>
-                                     <div class="form-group">
-                                        <label for="ir">
-                                        IR
-                                        <span class="mandatory" style="color: red;">*</span>
-                                        </label>
-                                        <select id="ir" name="ir" class="form-control">
-                                        <option>select</option>
-                                        </select>
+                                    <div class="form-group">
+                                        <label for="ir">IR <span class="mandatory" style="color: red;">*</span></label>
+                                        <select id="ir" name="ir" class="form-control"><option>select</option></select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="dr">
-                                        DR
-                                        <span class="mandatory" style="color: red;">*</span>
-                                        </label>
-                                        <select id="dr" name="dr" class="form-control">
-                                        <option>select</option>
-                                        </select>
+                                        <label for="dr">DR <span class="mandatory" style="color: red;">*</span></label>
+                                        <select id="dr" name="dr" class="form-control"><option>select</option></select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="sub_dr">
-                                        Sub DR
-                                        <span class="mandatory" style="color: red;">*</span>
-                                        </label>
-                                        <select id="sub_dr" name="sub_dr" class="form-control">
-                                        <option>select</option>
-                                        </select>
+                                        <label for="sub_dr">Sub DR <span class="mandatory" style="color: red;">*</span></label>
+                                        <select id="sub_dr" name="sub_dr" class="form-control"><option>select</option></select>
                                     </div>
                                 </div>
                             </div>
-                           
-                        </div>
-                       <div class="navigation">
+                            <div class="navigation">
                                 <button id="prevBtn">Previous</button>
                                 <button id="nextBtn">Next</button>
-                         </div>
-                    </form>`;
-                } else {
-                    console.error('Element with class "clicked-data" not found.');
-                }
+                                <button id="sub_all_data" style="display:none;">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                `;
+            } else {
+                console.error('Element with id not found.');
             }
-        });
-        // 
-        frappe.call({
-            method:"suvaidyam.services.apis.get_ir",
-            args:{},
-            callback:function(response){
-                response.message?.map((item)=>{
-                    const option = document.createElement('option');
-                    option.value = item.name;
-                    option.textContent = item.name1;
-                    document.getElementById('ir').appendChild(option);
-                })
-            }
-        });
+        }
+    });
 
-        // 
+    // Populate dropdown fields
+    async function populateDropdown(field, apiMethod) {
         frappe.call({
-            method:"suvaidyam.services.apis.get_dr",
-            args:{},
-            callback:function(response){
-                response.message?.map((item)=>{
-                    const option = document.createElement('option');
-                    option.value = item.name;
-                    option.textContent = item.name1;
-                    document.getElementById('dr').appendChild(option);
-                })
-            }
-        });
-        //
-        frappe.call({
-            method: "suvaidyam.services.apis.get_sub_dr",
+            method: apiMethod,
             args: {},
             callback: function(response) {
+                const selectElement = document.getElementById(field);
                 if (response.message) {
-                    response.message.forEach(function(item) {
+                    response.message.forEach(item => {
                         const option = document.createElement('option');
                         option.value = item.name;
-                        
                         option.textContent = item.name1;
-                        document.getElementById('sub_dr').appendChild(option);
+                        selectElement.appendChild(option);
                     });
                 }
             }
         });
-        
+    }
 
-        // { ======== Steper ========
+    await populateDropdown('ir', 'suvaidyam.services.apis.get_ir');
+    await populateDropdown('dr', 'suvaidyam.services.apis.get_dr');
+    await populateDropdown('sub_dr', 'suvaidyam.services.apis.get_sub_dr');
 
-        let currentStep = 1;
+    // Stepper logic
+    let currentStep = 1;
 
-        document.getElementById('prevBtn').addEventListener('click', function () {
-            changeStep(-1);
-        });
-
-        document.getElementById('nextBtn').addEventListener('click', function () {
-            changeStep(1);
-        });
-        function showStep(step) { 
-            const steps = document.querySelectorAll('.step');
-            const contents = document.querySelectorAll('.step-content');
-            steps.forEach((el) => el.classList.remove('active'));
-            contents.forEach((el) => el.classList.remove('active'));
-            document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
-            document.querySelector(`.step-content[data-step="${step}"]`).classList.add('active');
-            document.getElementById('prevBtn').disabled = step === 1;
-            document.getElementById('nextBtn').innerText = step === steps.length ? 'Submit' : 'Next';
-            // Add completed class to previous step when moving forward
-            if (step > 1) {
-                document.querySelector(`.step[data-step="${step - 1}"]`).classList.add('completed');
-            }
+    function showStep(step) {
+        const steps = document.querySelectorAll('.step');
+        const contents = document.querySelectorAll('.step-content');
+        steps.forEach(el => el.classList.remove('active'));
+        contents.forEach(el => el.classList.remove('active'));
+        document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
+        document.querySelector(`.step-content[data-step="${step}"]`).classList.add('active');
+        document.getElementById('prevBtn').disabled = step === 1;
+        if (step === steps.length) {
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('sub_all_data').style.display = 'block';
         }
-
-        function changeStep(stepChange) {
-            const steps = document.querySelectorAll('.step');
-            currentStep += stepChange;
-            if (currentStep > steps.length) {
-                // Handle form submission
-                alert('Form submitted!');
-                currentStep = steps.length; // Reset to the last step
-                return;
-            }
-            showStep(currentStep);
+        if (step > 1) {
+            document.querySelector(`.step[data-step="${step - 1}"]`).classList.add('completed');
         }
-        showStep(1);
-        // ======== Steper ========   } 
+    }
 
+    function changeStep(stepChange) {
+        const steps = document.querySelectorAll('.step');
+        currentStep += stepChange;
+        if (currentStep > steps.length) {
+            currentStep = steps.length;
+            return;
+        }
+        showStep(currentStep);
+    }
 
-        // Loop through tab_id and attach a click event listener to the button
+    document.getElementById('prevBtn').addEventListener('click', () => changeStep(-1));
+    document.getElementById('nextBtn').addEventListener('click', () => changeStep(1));
+    showStep(1);
+
+    // Handle form submission
+    document.getElementById('sub_all_data')?.addEventListener('click', () => {
+        let isValid = true;
         const allValues = [];
-        document.querySelector('#custom_submit_btn')?.addEventListener('click', () => {
-            let isValid = true;
-            allValues.length = 0; // Reset the array
-            tab_id.forEach((field_id) => {
-                // console.log(field_id)
-                const inputField = document.getElementById(`${field_id.fieldname}`);
-                let valueToAdd;
-                if (inputField.type === 'checkbox') {
-                    valueToAdd = inputField.checked;
-                } else {
-                    valueToAdd = inputField.value;
-                }
-                allValues.push({ [inputField.name]: valueToAdd });
-                const errorMessage = document.getElementById(`${field_id.fieldname}-error`);
-                if (errorMessage) {
-                    errorMessage.parentNode.removeChild(errorMessage);
-                }
-                // Function to validate password
-                function validatePassword(password) {
-                    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/;
-                    return passwordPattern.test(password);
-                }
-                // Basic validation for non-empty fields
-                if ((inputField.type === 'checkbox' && !inputField.checked) || (inputField.type !== 'checkbox' && !valueToAdd.trim())) {
-                    if (field_id.reqd === 1) {
-                        isValid = false;
-                        const errorMessage = document.createElement('div');
-                        errorMessage.textContent = `${field_id.fieldname} is required.`;
-                        errorMessage.id = `${field_id.fieldname}-error`;
-                        errorMessage.style.color = 'red';
-                        errorMessage.style.fontSize = '0.875em';
-                        inputField.parentNode.appendChild(errorMessage);
-                    }
-                }
-                else if (inputField.type === 'password' && !validatePassword(valueToAdd)) {
+        const formValues = {};
+        let data = {}
+        tab_id.forEach(field_id => {
+            const inputField = document.getElementById(`${field_id.fieldname}`);
+            let valueToAdd;
+            if (inputField.type === 'checkbox') {
+                valueToAdd = inputField.checked;
+            } else {
+                valueToAdd = inputField.value;
+            }
+            data[inputField.name] = valueToAdd;
+            const errorMessage = document.getElementById(`${field_id.fieldname}-error`);
+            if (errorMessage) {
+                errorMessage.parentNode.removeChild(errorMessage);
+            }
+
+            function validatePassword(password) {
+                const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/;
+                return passwordPattern.test(password);
+            }
+
+            if ((inputField.type === 'checkbox' && !inputField.checked) || (inputField.type !== 'checkbox' && !valueToAdd.trim())) {
+                if (field_id.reqd === 1) {
                     isValid = false;
                     const errorMessage = document.createElement('div');
-                    errorMessage.textContent = `Password must follow this format: Test@123`;
+                    errorMessage.textContent = `${field_id.fieldname} is required.`;
                     errorMessage.id = `${field_id.fieldname}-error`;
                     errorMessage.style.color = 'red';
                     errorMessage.style.fontSize = '0.875em';
                     inputField.parentNode.appendChild(errorMessage);
                 }
-            });
-            if (isValid) {
-                const successMessage = document.getElementById('success_message');
-                successMessage.style.display = 'block';
-                setTimeout(() => {
-                    successMessage.style.display = 'none';
-                }, 1000);
-                // console.log(allValues);
-                // Reset input fields
-                tab_id.forEach((field_id) => {
-                    const inputField = document.getElementById(`${field_id.fieldname}`);
-                    if (inputField.type === 'checkbox') {
-                        inputField.checked = false;
-                    } else {
-                        inputField.value = '';
-                    }
-                });
-                console.log('All fields are valid.');
-            } else {
-                alert('Please fill in all required fields.');
+            } else if (inputField.type === 'password' && !validatePassword(valueToAdd)) {
+                isValid = false;
+                const errorMessage = document.createElement('div');
+                errorMessage.textContent = `Password must follow this format: Test@123`;
+                errorMessage.id = `${field_id.fieldname}-error`;
+                errorMessage.style.color = 'red';
+                errorMessage.style.fontSize = '0.875em';
+                inputField.parentNode.appendChild(errorMessage);
             }
         });
+        // Collect form values 
+        formValues['form'] = form_id;
+        formValues['campaign'] = cam_id;
+        formValues['data'] = data;
+        formValues['state'] = frm.doc.state;
+        formValues['centre'] = frm.doc.centre;
+        formValues['beneficiary'] = frm.doc.name;
+        ['next_follow_up', 'ir', 'dr', 'sub_dr'].forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            formValues[field.name] = field.value;
+        });
+        allValues.push(formValues);
+        if (isValid) {
+            const successMessage = document.getElementById('success_message');
+            successMessage.style.display = 'block';
+            setTimeout(() => successMessage.style.display = 'none', 1000);
+            tab_id.forEach(field_id => {
+                const inputField = document.getElementById(`${field_id.fieldname}`);
+                if (inputField.type === 'checkbox') {
+                    inputField.checked = false;
+                } else {
+                    inputField.value = '';
+                }
+            });
+            console.log('All fields are valid.', allValues);
+        } else {
+            alert('Please fill in all required fields.');
+        }
+    });
 }
+
 
 async function call_popup (frm,id) {
     if (!$(id).length) {
