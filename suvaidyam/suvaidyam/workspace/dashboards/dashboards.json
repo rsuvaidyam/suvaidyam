@@ -1,8 +1,13 @@
 {
  "charts": [],
- "content": "[{\"id\":\"dTdTLiRUjs\",\"type\":\"paragraph\",\"data\":{\"text\":\"Dashboard\",\"col\":12}}]",
+ "content": "[{\"id\":\"0DnIcsk0PV\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Live Call\",\"col\":12}}]",
  "creation": "2024-07-19 13:07:05.738242",
- "custom_blocks": [],
+ "custom_blocks": [
+  {
+   "custom_block_name": "Live Call",
+   "label": "Live Call"
+  }
+ ],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
@@ -13,7 +18,7 @@
  "is_hidden": 0,
  "label": "Dashboards",
  "links": [],
- "modified": "2024-07-19 14:10:51.288662",
+ "modified": "2024-07-30 13:27:33.835704",
  "modified_by": "Administrator",
  "module": "SUVAIDYAM",
  "name": "Dashboards",
