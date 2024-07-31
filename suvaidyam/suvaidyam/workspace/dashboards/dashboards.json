@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"0DnIcsk0PV\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Live Call\",\"col\":12}}]",
+ "content": "[{\"id\":\"0DnIcsk0PV\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Live Call\",\"col\":12}},{\"id\":\"lMyx07pHfv\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Task\",\"col\":12}}]",
  "creation": "2024-07-19 13:07:05.738242",
  "custom_blocks": [
   {
@@ -18,7 +18,7 @@
  "is_hidden": 0,
  "label": "Dashboards",
  "links": [],
- "modified": "2024-07-30 13:27:33.835704",
+ "modified": "2024-07-31 10:24:56.828916",
  "modified_by": "Administrator",
  "module": "SUVAIDYAM",
  "name": "Dashboards",
@@ -26,7 +26,13 @@
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
- "quick_lists": [],
+ "quick_lists": [
+  {
+   "document_type": "Task",
+   "label": "Task",
+   "quick_list_filter": "[]"
+  }
+ ],
  "roles": [],
  "sequence_id": 1.0,
  "shortcuts": [],
