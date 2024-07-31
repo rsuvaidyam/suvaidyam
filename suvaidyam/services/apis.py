@@ -17,7 +17,22 @@ def get_sub_dr():
     data = frappe.db.get_list('DS', fields=['name', 'name1'])
     return data
 
-
+@frappe.whitelist()
+def create_cam_form_data(item):
+    item = json.loads(item)
+    # create a new document
+    doc = frappe.new_doc('Campaign Form Data')
+    doc.form = item.get('form',None)
+    doc.campaign = item.get('campaign', None)
+    doc.data = item.get('data', None)
+    doc.state = item.get('state', None)
+    doc.centre = item.get('centre', None)
+    doc.beneficiary = item.get('beneficiary', None)
+    doc.next_follow_up = item.get('next_follow_up', None)
+    doc.ir = item.get('ir', None)
+    doc.disposition = item.get('dr', None)
+    doc.disposition_subset = item.get('sub_dr', None)
+    doc.insert()
  
 @frappe.whitelist()
 def campaign_get():

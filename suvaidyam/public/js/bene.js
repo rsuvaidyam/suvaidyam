@@ -603,10 +603,23 @@ async function cam_from_builder(datas, index, id,frm,cam_id) {
                                     </div>
                                 </div>
                             </div>
+                         
                             <div class="navigation">
                                 <button id="prevBtn">Previous</button>
                                 <button id="nextBtn">Next</button>
-                                <button id="sub_all_data" style="display:none;">Submit</button>
+                                <button id="sub_all_data" style="display:none;" >Submit</button>
+                                <div id="loader" style="display:none;   display: none; 
+                                position: fixed; 
+                                top: 50%; 
+                                left: 50%; 
+                                transform: translate(-50%, -50%); 
+                                background: rgba(0, 0, 0, 0.7); 
+                                color: white; 
+                                padding: 10px 20px; 
+                                border-radius: 5px; 
+                                font-size: 16px; 
+                                z-index: 1000;">Loading...</div>
+                                <div id="success_message" style="display:none; ">Form submitted successfully!</div>  
                             </div>
                         </div>
                     </form>
@@ -676,10 +689,13 @@ async function cam_from_builder(datas, index, id,frm,cam_id) {
 
     // Handle form submission
     document.getElementById('sub_all_data')?.addEventListener('click', () => {
+        const submitButton = document.getElementById('sub_all_data');
+        const loader = document.getElementById('loader');
         let isValid = true;
-        const allValues = [];
-        const formValues = {};
+        let formValues = {};
         let data = {}
+        submitButton.disabled = true;
+        loader.style.display = 'block';
         tab_id.forEach(field_id => {
             const inputField = document.getElementById(`${field_id.fieldname}`);
             let valueToAdd;
@@ -718,7 +734,9 @@ async function cam_from_builder(datas, index, id,frm,cam_id) {
                 errorMessage.style.fontSize = '0.875em';
                 inputField.parentNode.appendChild(errorMessage);
             }
+           
         });
+    
         // Collect form values 
         formValues['form'] = form_id;
         formValues['campaign'] = cam_id;
@@ -730,11 +748,26 @@ async function cam_from_builder(datas, index, id,frm,cam_id) {
             const field = document.getElementById(fieldId);
             formValues[field.name] = field.value;
         });
-        allValues.push(formValues);
+        if(formValues){
+                frappe.call({
+                    method: 'suvaidyam.services.apis.create_cam_form_data',
+                    args: {item:formValues},
+                    callback: function(response) { 
+                        
+                            const successMessage = document.getElementById('success_message');
+                            successMessage.style.display = 'block';
+                            setTimeout(() =>{
+                            successMessage.style.display = 'none';
+                            loader.style.display = 'none';
+                             submitButton.disabled = false;
+                             showStep(1)
+                            //  console.log('hello world');
+                         }, 3000);
+                        
+                    }
+                });
+        }
         if (isValid) {
-            const successMessage = document.getElementById('success_message');
-            successMessage.style.display = 'block';
-            setTimeout(() => successMessage.style.display = 'none', 1000);
             tab_id.forEach(field_id => {
                 const inputField = document.getElementById(`${field_id.fieldname}`);
                 if (inputField.type === 'checkbox') {
@@ -742,8 +775,7 @@ async function cam_from_builder(datas, index, id,frm,cam_id) {
                 } else {
                     inputField.value = '';
                 }
-            });
-            console.log('All fields are valid.', allValues);
+            }); 
         } else {
             alert('Please fill in all required fields.');
         }
