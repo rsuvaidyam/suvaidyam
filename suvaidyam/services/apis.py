@@ -17,53 +17,40 @@ def get_sub_dr():
     data = frappe.db.get_list('DS', fields=['name', 'name1'])
     return data
 
-@frappe.whitelist()
-def create_cam_form_data(item):
-    item = json.loads(item)
-    # create a new document
-    doc = frappe.new_doc('Campaign Form Data')
-    doc.form = item.get('form',None)
-    doc.campaign = item.get('campaign', None)
-    doc.data = item.get('data', None)
-    doc.state = item.get('state', None)
-    doc.centre = item.get('centre', None)
-    doc.beneficiary = item.get('beneficiary', None)
-    doc.next_follow_up = item.get('next_follow_up', None)
-    doc.ir = item.get('ir', None)
-    doc.disposition = item.get('dr', None)
-    doc.disposition_subset = item.get('sub_dr', None)
-    doc.insert()
  
 @frappe.whitelist()
-def campaign_get():
+def campaign_get(param1='', param2='', param3=''):
+  
+    query_conditions = ''
+    
+    if param1:
+        query_conditions = f"WHERE _camp.state= '{param1}'"
+
+    if param2:   
+         query_conditions = f"WHERE _camp.centre = '{param2}'"
+
+    # if param3:
+    #         query_conditions = f"WHERE _camp.agent = '{param3}'"
+ 
+    
+    
     sql = f"""
         SELECT
             _camp.name1 as campaign_name,
             _camp.name as campaign_id,
             (SELECT COUNT(DISTINCT beneficiary) FROM `tabChildBeneficiary` WHERE parent = _camp.name) as beneficiary_count,
             (SELECT COUNT(name) FROM `tabTask` WHERE campaign = _camp.name) as task_count,
+              (SELECT GROUP_CONCAT( agent) FROM `tabTask` WHERE campaign = _camp.name) AS task_agent, 
             (SELECT COUNT(name) FROM `tabCall Logs` WHERE campaign = _camp.name AND call_type = 'Inbound') as call_in_count,
             (SELECT COUNT(name) FROM `tabCall Logs` WHERE campaign = _camp.name AND call_type = 'Outbound') as call_out_count
         FROM
             `tabCampaign` AS _camp
+        {query_conditions}
     """
     return frappe.db.sql(sql, as_dict=True)
 
+
  
-@frappe.whitelist()
-def task_get():
-    sql = f"""
-         SELECT 
-              _task.name as task_id ,
-            _task.name1 as task_name ,
-            _task.campaign as task_campaign,
-            _task.agent as task_agent,
-            _task.due_date as task_due,
-            (SELECT COUNT(DISTINCT beneficiary) FROM `tabChildBeneficiary` WHERE parent = _task.name) as beneficiary_count
-         FROM 
-                `tabTask` AS _task
-    """
-    return frappe.db.sql(sql, as_dict=True)
 
 
 
