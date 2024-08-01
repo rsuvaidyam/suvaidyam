@@ -30,9 +30,8 @@ def campaign_get(param1='', param2='', param3=''):
          query_conditions = f"WHERE _camp.centre = '{param2}'"
 
     # if param3:
-    #         query_conditions = f"WHERE _camp.agent = '{param3}'"
+    #         query_conditions = f"WHERE task_agent.agent = '{param3}'"
  
-    
     
     sql = f"""
         SELECT
@@ -44,7 +43,7 @@ def campaign_get(param1='', param2='', param3=''):
             (SELECT COUNT(name) FROM `tabCall Logs` WHERE campaign = _camp.name AND call_type = 'Inbound') as call_in_count,
             (SELECT COUNT(name) FROM `tabCall Logs` WHERE campaign = _camp.name AND call_type = 'Outbound') as call_out_count
         FROM
-            `tabCampaign` AS _camp
+            `tabCampaign` AS _camp 
         {query_conditions}
     """
     return frappe.db.sql(sql, as_dict=True)
