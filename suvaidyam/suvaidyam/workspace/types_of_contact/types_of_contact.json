@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Types Of contact",
  "links": [],
- "modified": "2024-07-19 14:10:52.444287",
+ "modified": "2024-08-05 11:39:36.589570",
  "modified_by": "Administrator",
  "module": "SUVAIDYAM",
  "name": "Types Of contact",
@@ -29,7 +29,7 @@
   }
  ],
  "roles": [],
- "sequence_id": 17.0,
+ "sequence_id": 22.0,
  "shortcuts": [],
  "title": "Types Of contact"
 }

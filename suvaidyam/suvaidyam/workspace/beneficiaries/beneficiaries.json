@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Beneficiaries",
  "links": [],
- "modified": "2024-07-19 14:10:51.678864",
+ "modified": "2024-08-05 11:39:33.158600",
  "modified_by": "Administrator",
  "module": "SUVAIDYAM",
  "name": "Beneficiaries",
@@ -29,7 +29,7 @@
   }
  ],
  "roles": [],
- "sequence_id": 6.0,
+ "sequence_id": 2.0,
  "shortcuts": [],
  "title": "Beneficiaries"
 }

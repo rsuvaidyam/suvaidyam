@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Master",
  "links": [],
- "modified": "2024-07-19 20:46:11.836375",
+ "modified": "2024-08-05 11:39:35.993733",
  "modified_by": "Administrator",
  "module": "SUVAIDYAM",
  "name": "Master",
@@ -30,7 +30,7 @@
    "role": "Administrator"
   }
  ],
- "sequence_id": 10.0,
+ "sequence_id": 15.0,
  "shortcuts": [],
  "title": "Master"
 }

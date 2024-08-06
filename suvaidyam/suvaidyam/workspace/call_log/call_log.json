@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Call Log",
  "links": [],
- "modified": "2024-07-19 14:10:51.832894",
+ "modified": "2024-08-05 11:39:35.785828",
  "modified_by": "Administrator",
  "module": "SUVAIDYAM",
  "name": "Call Log",
@@ -29,7 +29,7 @@
   }
  ],
  "roles": [],
- "sequence_id": 8.0,
+ "sequence_id": 13.0,
  "shortcuts": [],
  "title": "Call Log"
 }

@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "BRMS User",
  "links": [],
- "modified": "2024-07-19 20:34:28.313450",
+ "modified": "2024-08-05 11:39:34.543483",
  "modified_by": "Administrator",
  "module": "SUVAIDYAM",
  "name": "BRMS User",
@@ -36,7 +36,7 @@
    "role": "Administrator"
   }
  ],
- "sequence_id": 4.0,
+ "sequence_id": 8.0,
  "shortcuts": [],
  "title": "BRMS User"
 }

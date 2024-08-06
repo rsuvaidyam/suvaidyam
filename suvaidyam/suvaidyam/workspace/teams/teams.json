@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Teams",
  "links": [],
- "modified": "2024-07-19 14:10:51.602206",
+ "modified": "2024-08-05 11:39:34.644100",
  "modified_by": "Administrator",
  "module": "SUVAIDYAM",
  "name": "Teams",
@@ -29,7 +29,7 @@
   }
  ],
  "roles": [],
- "sequence_id": 5.0,
+ "sequence_id": 9.0,
  "shortcuts": [],
  "title": "Teams"
 }

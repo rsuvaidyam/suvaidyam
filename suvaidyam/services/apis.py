@@ -40,6 +40,7 @@ def campaign_get(param1='', param2='', param3=''):
             _camp.name as campaign_id,
             (SELECT COUNT(DISTINCT beneficiary) FROM `tabChildBeneficiary` WHERE parent = _camp.name) as beneficiary_count,
             (SELECT COUNT(name) FROM `tabTask` WHERE campaign = _camp.name) as task_count,
+            (SELECT GROUP_CONCAT(name ORDER BY name) FROM `tabTask` WHERE campaign = _camp.name) AS task_ids,
             (SELECT GROUP_CONCAT(agent) FROM `tabTask` WHERE campaign = _camp.name) AS task_agent, 
             (SELECT COUNT(name) FROM `tabCall Logs` WHERE campaign = _camp.name AND call_type = 'Inbound') as call_in_count,
             (SELECT COUNT(name) FROM `tabCall Logs` WHERE campaign = _camp.name AND call_type = 'Outbound') as call_out_count
@@ -52,6 +53,16 @@ def campaign_get(param1='', param2='', param3=''):
     return frappe.db.sql(sql, as_dict=True)
 
  
+ 
+ 
+
+# @frappe.whitelist()
+# def get_task():
+#     tasks = [
+#         {"id": 1, "name": "Task 1", "status": "Open"},
+#         {"id": 2, "name": "Task 2", "status": "In Progress"}
+#     ]
+#     return tasks
 
 
 

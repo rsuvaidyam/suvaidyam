@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Villages",
  "links": [],
- "modified": "2024-07-19 14:10:52.914045",
+ "modified": "2024-08-05 11:39:37.155432",
  "modified_by": "Administrator",
  "module": "SUVAIDYAM",
  "name": "Villages",
@@ -29,7 +29,7 @@
   }
  ],
  "roles": [],
- "sequence_id": 22.0,
+ "sequence_id": 27.0,
  "shortcuts": [],
  "title": "Villages"
 }

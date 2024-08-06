@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "States",
  "links": [],
- "modified": "2024-07-19 14:10:52.584423",
+ "modified": "2024-08-05 11:39:36.797838",
  "modified_by": "Administrator",
  "module": "SUVAIDYAM",
  "name": "States",
@@ -29,7 +29,7 @@
   }
  ],
  "roles": [],
- "sequence_id": 19.0,
+ "sequence_id": 24.0,
  "shortcuts": [],
  "title": "States"
 }
