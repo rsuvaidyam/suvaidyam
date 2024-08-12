@@ -51,7 +51,7 @@ def campaign_get(param1='', param2='', param3=''):
     """
     return frappe.db.sql(sql, as_dict=True)
 
- 
+
 
 
 
